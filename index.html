@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator 2024</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Body Styles */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #121212;
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Container for All Pages */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            animation: fadeIn 0.8s ease;
+            padding-top: 60px; /* Added padding for space at the top */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Menu Button (Hamburger) */
+        .menu-btn {
+            position: fixed; /* Changed to fixed to stay on top */
+            top: 20px;
+            left: 20px;
+            width: 30px;
+            height: 25px;
+            cursor: pointer;
+            z-index: 1000; /* Ensured it's above other content */
+        }
+
+        .menu-btn div {
+            width: 100%;
+            height: 4px;
+            background-color: #fff;
+            margin: 5px 0;
+            transition: 0.4s;
+        }
+
+        /* Menu Styles */
+        .menu {
+            display: none;
+            position: fixed; /* Changed to fixed to stay on top */
+            top: 60px;
+            left: 20px;
+            background-color: #333;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000; /* Ensured it's above other content */
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .menu a:hover {
+            background-color: #444;
+        }
+
+        /* Display Screen for Calculator */
+        .calculator input[type="text"] {
+            width: 100%;
+            height: 60px;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #222;
+            color: #fff;
+            font-size: 24px;
+            text-align: right;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 1px;
+            animation: slideDown 0.5s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Common Layout for Calculator, Currency Converter, and Unit Converter */
+        .calculator, .currency-converter, .unit-converter {
+            background-color: #333;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s ease;
+        }
+
+        /* Buttons Grid Layout for Calculator */
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        /* Button Styles */
+        .buttons button, .converter-btn {
+            height: 60px;
+            border: none;
+            border-radius: 8px;
+            background-color: #444;
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Hover and Active Effects for Buttons */
+        .buttons button:hover, .converter-btn:hover {
+            background-color: #555;
+            transform: scale(1.05);
+        }
+
+        .buttons button:active, .converter-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Specific Styles for Operator Buttons */
+        .buttons button.operator {
+            background-color: #FF9500;
+        }
+
+        .buttons button.equals {
+            background-color: #FF9500;
+        }
+
+        /* Layout for Unit and Currency Converter */
+        .converter-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .converter-row select, .converter-row input {
+            width: 48%;
+            height: 60px;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #222;
+            color: #fff;
+            font-size: 18px;
+            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease;
+        }
+
+        .converter-row select.light-mode, .converter-row input.light-mode {
+            background-color: #ddd;
+            color: #333;
+        }
+
+        .converter-btn {
+            width: 100%;
+        }
+
+        /* Toggle Button */
+        .toggle-container {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+        }
+
+        .toggle-btn {
+            width: 40px;
+            height: 40px;
+            background-color: #444;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .toggle-btn img {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Light Mode Styles */
+        .light-mode {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .light-mode .calculator, .light-mode .currency-converter, .light-mode .unit-converter {
+            background-color: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .light-mode .calculator input[type="text"], .light-mode .currency-converter input, .light-mode .unit-converter input {
+            background-color: #ddd;
+            color: #333;
+        }
+
+        .light-mode .buttons button, .light-mode .converter-btn {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .light-mode .buttons button:hover, .light-mode .converter-btn:hover {
+            background-color: #ccc;
+        }
+
+        .light-mode .buttons button.operator {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .light-mode .toggle-btn {
+            background-color: #ddd;
+        }
+
+        .light-mode .toggle-btn img {
+            content: url('SimpleCalculator/Images/sun.png');
+        }
+
+        /* Dark Mode Icon */
+        .toggle-btn img {
+            content: url('SimpleCalculator/Images/moon.png');
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-btn" onclick="toggleMenu()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    
+    <div class="container">
+        <!-- Menu -->
+        <div class="menu">
+            <a href="#" onclick="showPage('calculator')">Calculator</a>
+            <a href="#" onclick="showPage('currency-converter')">Currency Converter</a>
+            <a href="#" onclick="showPage('unit-converter')">Unit Converter</a>
+        </div>
+
+        <!-- Calculator Page -->
+        <div class="calculator page" id="calculator">
+            <input type="text" id="display" readonly>
+            <div class="buttons">
+                <button onclick="clearDisplay()">C</button>
+                <button onclick="appendToDisplay('(')">(</button>
+                <button onclick="appendToDisplay(')')">)</button>
+                <button onclick="appendToDisplay('/')">/</button>
+
+                <button onclick="appendToDisplay('7')">7</button>
+                <button onclick="appendToDisplay('8')">8</button>
+                <button onclick="appendToDisplay('9')">9</button>
+                <button onclick="appendToDisplay('*')" class="operator">*</button>
+
+                <button onclick="appendToDisplay('4')">4</button>
+                <button onclick="appendToDisplay('5')">5</button>
+                <button onclick="appendToDisplay('6')">6</button>
+                <button onclick="appendToDisplay('-')" class="operator">-</button>
+
+                <button onclick="appendToDisplay('1')">1</button>
+                <button onclick="appendToDisplay('2')">2</button>
+                <button onclick="appendToDisplay('3')">3</button>
+                <button onclick="appendToDisplay('+')" class="operator">+</button>
+
+                <button onclick="appendToDisplay('0')">0</button>
+                <button onclick="appendToDisplay('.')">.</button>
+                <button onclick="appendToDisplay('%')">%</button>
+                <button onclick="calculate()" class="equals">=</button>
+            </div>
+        </div>
+
+        <!-- Currency Converter Page -->
+        <div class="currency-converter page" id="currency-converter" style="display:none;">
+            <div class="converter-row">
+                <select id="currency-from">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="BHD" selected>BHD</option>
+                </select>
+                <input type="number" id="amount-from" placeholder="Amount">
+            </div>
+            <div class="converter-row">
+                <select id="currency-to">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                    <option value="BHD">BHD</option>
+                </select>
+                <input type="number" id="amount-to" readonly placeholder="Converted Amount">
+            </div>
+            <button class="converter-btn" onclick="convertCurrency()">Convert</button>
+        </div>
+
+        <!-- Unit Converter Page -->
+        <div class="unit-converter page" id="unit-converter" style="display:none;">
+            <div class="converter-row">
+                <select id="unit-from">
+                    <option value="cm">Centimeters</option>
+                    <option value="m">Meters</option>
+                    <option value="km">Kilometers</option>
+                </select>
+                <input type="number" id="unit-amount-from" placeholder="Amount">
+            </div>
+            <div class="converter-row">
+                <select id="unit-to">
+                    <option value="cm">Centimeters</option>
+                    <option value="m">Meters</option>
+                    <option value="km">Kilometers</option>
+                </select>
+                <input type="number" id="unit-amount-to" readonly placeholder="Converted Amount">
+            </div>
+            <button class="converter-btn" onclick="convertUnits()">Convert</button>
+        </div>
+    </div>
+
+    <!-- Toggle Button for Dark/Light Mode -->
+    <div class="toggle-container">
+        <button class="toggle-btn" onclick="toggleMode()">
+            <img src="SimpleCalculator/Images/moon.png" alt="Toggle Mode">
+        </button>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.querySelector('.menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function showPage(pageId) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.style.display = 'none');
+            document.getElementById(pageId).style.display = 'block';
+            toggleMenu();
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        function appendToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+
+        function calculate() {
+            try {
+                const result = eval(document.getElementById('display').value);
+                document.getElementById('display').value = result;
+            } catch (error) {
+                document.getElementById('display').value = 'Error';
+            }
+        }
+
+        function convertCurrency() {
+            // Dummy implementation
+            const amount = document.getElementById('amount-from').value;
+            document.getElementById('amount-to').value = amount * 2; // Just for demonstration
+        }
+
+        function convertUnits() {
+            // Dummy implementation
+            const amount = document.getElementById('unit-amount-from').value;
+            document.getElementById('unit-amount-to').value = amount * 100; // Just for demonstration
+        }
+
+        function toggleMode() {
+            document.body.classList.toggle('light-mode');
+            const isLightMode = document.body.classList.contains('light-mode');
+            const icon = document.querySelector('.toggle-btn img');
+            icon.src = isLightMode ? 'SimpleCalculator/Images/sun.png' : 'SimpleCalculator/Images/moon.png';
+        }
+    </script>
+</body>
+</html>
